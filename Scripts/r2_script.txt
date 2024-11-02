@@ -1,0 +1,119 @@
+#AutomaticDoor2013
+
+#Include scripts code for older scripts
+<Include AutomaticDoor2013/Scripts/r1_script.txt>
+
+#Textures
+<Textures>
+Load data/MT/blank.gif, Door_Blank, 1, 1, false
+<EndTextures>
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
+<Function AddAutomaticDoor2>
+Set 50 = %param6% #Main Negative Left Texture
+Set 50A = %param7% #Main Positive Left Texture
+Set 50B = %param8% #Main Negative Right Texture
+Set 50C = %param9% #Main Positive Right Texture
+Set 51 = %param10% #Side Texture
+Set 52 = %param13% #Direction
+Set 53 = %param12% #Thickness
+Set 54 = %param11% #Door Type
+Set 55 = %param15% #Door Width
+Set 56 = %param16% #Door Height
+Set 56A = %param17% #Door Offset
+Set 57 = %param18% #Door Speed
+Set 57A = %param19% #Door Timer
+Set 58 = %param20% #Door Open Sound
+Set 59 = %param21% #Door Close Sound
+Set 60 = %param22% #Chime Sound
+Set 61 = %param1% #Elevator Number
+Set 62 = %param2% #Assigned Shaft
+Set 63 = %param3% #Floor
+Set 64 = %param4% #Center X
+Set 65 = %param5% #Center Z
+Set 66 = %param14% #Movement Direction
+Set 67 = %param23% #Trigger Area (Negative-facing side)
+Set 68 = %param24% #Trigger Area (Positive-facing side)
+Set 69 = %param25% #Maximum Distance of Trigger Area
+Set 74 = %param26% #Sensor Unlit Texture
+Set 75 = %param27% #Sensor Lit Texture
+	
+<Elevator %param1%>
+Speed = 1
+Acceleration = 0.2
+Deceleration = 0.2
+ServicedFloors = %63%
+AssignedShaft = %62%
+CarIdleSound = silence.wav
+CreateElevator false, %64%, %65%, %63%
+DoorTimer 1 = %57A%
+NudgeTimer 1 = 0
+
+#Sounds
+OpenSound 1 = %58%
+CloseSound 1 = %59%
+ChimeSound 1 = silence.wav
+MotorStartSound = silence.wav
+MotorRunSound = silence.wav
+MotorStopSound = silence.wav
+AlarmSound = silence.wav
+AlarmSoundStop = silence.wav
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Door Settings
+if[%52% = True | %52% = true] Set 70 = -(%55% / 2)
+if[%52% = True | %52% = true] Set 71 = 0
+if[%52% = True | %52% = true] Set 72 = %55% / 2
+if[%52% = True | %52% = true] Set 73 = 0
+
+if[%52% = False | %52% = false] Set 70 = 0
+if[%52% = False | %52% = false] Set 71 = -(%55% / 2)
+if[%52% = False | %52% = false] Set 72 = 0
+if[%52% = False | %52% = false] Set 73 = %55% / 2
+
+#Single slide doors
+TextureOverride %50%, %50A%, %51%, %51%, %51%, %51%
+if[%54% = 1] AddDoorComponent 1, Main, %50%, %51%, %53%, %66%, %57%, %70%, %71%, %72%, %73%, %56%, 0, 0, 0, 0, 0
+if[%54% = 1] FinishDoors 1
+
+if[%54% = 1] AddShaftDoorsComponent 1, Main, Door_Blank, Door_Blank, %53%, %66%, %57%, %70%, %71%, %72%, %73%, %56%, %56A%, 0, 0, 0, 0
+if[%54% = 1] FinishShaftDoors 1
+
+#Center opening doors
+TextureOverride %50%, %50A%, %51%, %51%, %51%, %51%
+if[%54% = 2 & (%52% = True | %52% = true)] AddDoorComponent 1, Left, %50%, %51%, %53%, Left, %57%, %70%, %71%, 0, %73%, %56%, 0, 0, 0, 0, 0
+TextureOverride %50%, %50A%, %51%, %51%, %51%, %51%
+if[%54% = 2 & (%52% = False | %52% = false)] AddDoorComponent 1, Left, %50%, %51%, %53%, Left, %57%, %70%, %71%, %72%, 0, %56%, 0, 0, 0, 0, 0
+TextureOverride %50B%, %50C%, %51%, %51%, %51%, %51%
+if[%54% = 2 & (%52% = True | %52% = true)] AddDoorComponent 1, Right, %50B%, %51%, %53%, Right, %57%, 0, %71%, %72%, %73%, %56%, 0, 0, 0, 0, 0
+TextureOverride %50B%, %50C%, %51%, %51%, %51%, %51%
+if[%54% = 2 & (%52% = False | %52% = false)] AddDoorComponent 1, Right, %50B%, %51%, %53%, Right, %57%, %70%, 0, %72%, %73%, %56%, 0, 0, 0, 0, 0
+if[%54% = 2] FinishDoors 1
+
+if[%54% = 2 & (%52% = True | %52% = true)] AddShaftDoorsComponent 1, Left, Door_Blank, Door_Blank, %53%, Left, %57%, %70%, %71%, 0, %73%, %56%, %56A%, 0, 0, 0, 0
+if[%54% = 2 & (%52% = False | %52% = false)] AddShaftDoorsComponent 1, Left, Door_Blank, Door_Blank, %53%, Left, %57%, %70%, %71%, %72%, 0, %56%, %56A%, 0, 0, 0, 0
+if[%54% = 2 & (%52% = True | %52% = true)] AddShaftDoorsComponent 1, Right, Door_Blank, Door_Blank, %53%, Right, %57%, 0, %71%, %72%, %73%, %56%, %56A%, 0, 0, 0, 0
+if[%54% = 2 & (%52% = False | %52% = false)] AddShaftDoorsComponent 1, Right, Door_Blank, Door_Blank, %53%, Right, %57%, %70%, 0, %72%, %73%, %56%, %56A%, 0, 0, 0, 0
+if[%54% = 2] FinishShaftDoors 1
+<EndElevator>
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Door Action
+AddAction L%61%_AutoDoorSensorOn, Elevator %61%, open
+AddAction L%61%_AutoDoorSensorOn, Elevator %61%, hold
+AddAction L%61%_AutoDoorSensorOn, Floor %63%, ChangeTexture, %74%, %75%
+AddAction L%61%_AutoDoorSensorOff, Elevator %61%, open
+AddAction L%61%_AutoDoorSensorOff, Floor %63%, ChangeTexture, %75%, %74%
+AddAction L%61%_AutoDoorSensorOff, Floor %63%, ChangeTexture, %75%, %74%
+
+<Floor %param3%>
+#Door Trigger (Negative-facing side)
+if[%67% = True & (%52% = True | %52% = true)] AddTrigger L%61%_AutoDoorTriggerNegative, %60%, %64% - (%55% / 2), %56A%, %65% - %69%, %64% + (%55% / 2), %56% + %56A%, %65%, L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+if[%67% = true & (%52% = True | %52% = true)] AddTrigger L%61%_AutoDoorTriggerNegative, %60%, %64% - (%55% / 2), %56A%, %65% - %69%, %64% + (%55% / 2), %56% + %56A%, %65%, L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+if[%67% = True & (%52% = False | %52% = false)] AddTrigger L%61%_AutoDoorTriggerNegative, %60%, %64% - %69%, %56A%, %65% - (%55% / 2), %64%, %56% + %56A%, %65% + (%55% / 2), L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+if[%67% = true & (%52% = False | %52% = false)] AddTrigger L%61%_AutoDoorTriggerNegative, %60%, %64% - %69%, %56A%, %65% - (%55% / 2), %64%, %56% + %56A%, %65% + (%55% / 2), L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+
+#Door Trigger (Positive-facing side)
+if[%68% = True & (%52% = True | %52% = true)] AddTrigger L%61%_AutoDoorTriggerPositive, %60%, %64% - (%55% / 2), %56A%, %65%, %64% + (%55% / 2), %56% + %56A%, %65% + %69%, L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+if[%68% = true & (%52% = True | %52% = true)] AddTrigger L%61%_AutoDoorTriggerPositive, %60%, %64% - (%55% / 2), %56A%, %65%, %64% + (%55% / 2), %56% + %56A%, %65% + %69%, L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+if[%68% = True & (%52% = False | %52% = false)] AddTrigger L%61%_AutoDoorTriggerPositive, %60%, %64%, %56A%, %65% - (%55% / 2), %64% + %69%, %56% + %56A%, %65% + (%55% / 2), L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+if[%68% = true & (%52% = False | %52% = false)] AddTrigger L%61%_AutoDoorTriggerPositive, %60%, %64%, %56A%, %65% - (%55% / 2), %64% + %69%, %56% + %56A%, %65% + (%55% / 2), L%61%_AutoDoorSensorOff, L%61%_AutoDoorSensorOn
+<EndFloor>
+<EndFunction>
